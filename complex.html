@@ -6,6 +6,9 @@
         gap: 1em;
         grid-template-columns: 1fr 1fr;
         place-items: center;
+        padding: 1em;
+        inline-size: fit-content;
+        margin-inline: auto;
       }
 
       canvas {
@@ -77,6 +80,21 @@
             Math.sinh(2 * this.im) / under,
           );
         }
+
+        sinh() {
+          return new Complex(
+            Math.sinh(this.re) * Math.cos(this.im),
+            Math.cosh(this.re) * Math.sin(this.im),
+          );
+        }
+
+        tanh() {
+          const under = Math.cosh(2 * this.re) + Math.cos(2 * this.im);
+          return new Complex(
+            Math.sinh(2 * this.re) / under,
+            Math.sin(2 * this.im) / under,
+          );
+        }
       }
 
       const drawCanvas = (canvas, func) => {
@@ -88,9 +106,10 @@
         const context = canvas.getContext("2d");
         context.scale(devicePixelRatio, devicePixelRatio);
 
+        const widthLogical = Math.PI * 4;
         const width = rect.width;
         const height = rect.height;
-        const scale = (Math.PI * 4) / width;
+        const scale = widthLogical / width;
         for (let i = 0; i < width; i++)
           for (let j = 0; j < height; j++) {
             const x = (i - width / 2) * scale;
@@ -118,67 +137,50 @@
       };
 
       document.addEventListener("DOMContentLoaded", () => {
-        const [
-          canvasId,
-          canvasCon,
-          canvasRec,
-          canvasExp,
-          canvasLog,
-          canvasSin,
-          canvasCos,
-          canvasTan,
-        ] = document.getElementsByTagName("canvas");
-
-        drawCanvas(canvasId, (x, y) => new Complex(x, y));
-        drawCanvas(canvasCon, (x, y) => new Complex(x, y).conj());
-        drawCanvas(canvasRec, (x, y) => new Complex(x, y).recip());
-        drawCanvas(canvasExp, (x, y) => new Complex(x, y).exp());
-        drawCanvas(canvasLog, (x, y) => new Complex(x, y).log());
-        drawCanvas(canvasSin, (x, y) => new Complex(x, y).sin());
-        drawCanvas(canvasCos, (x, y) => new Complex(x, y).cos());
-        drawCanvas(canvasTan, (x, y) => new Complex(x, y).tan());
+        for (const canvas of document.querySelectorAll("canvas"))
+          drawCanvas(canvas, eval(canvas.dataset.func));
       });
     </script>
   </head>
   <body>
     <figure>
-      <figcaption>id</figcaption>
-      <canvas></canvas>
-    </figure>
-
-    <figure>
-      <figcaption>conjugate</figcaption>
-      <canvas></canvas>
+      <figcaption>identity</figcaption>
+      <canvas data-func="(x, y) => new Complex(x, y)"></canvas>
     </figure>
 
     <figure>
       <figcaption>reciprocal</figcaption>
-      <canvas></canvas>
+      <canvas data-func="(x, y) => new Complex(x, y).recip()"></canvas>
     </figure>
 
     <figure>
       <figcaption>exp</figcaption>
-      <canvas></canvas>
+      <canvas data-func="(x, y) => new Complex(x, y).exp()"></canvas>
     </figure>
 
     <figure>
       <figcaption>log</figcaption>
-      <canvas></canvas>
+      <canvas data-func="(x, y) => new Complex(x, y).log()"></canvas>
     </figure>
 
     <figure>
       <figcaption>sin</figcaption>
-      <canvas></canvas>
-    </figure>
-
-    <figure>
-      <figcaption>cos</figcaption>
-      <canvas></canvas>
+      <canvas data-func="(x, y) => new Complex(x, y).sin()"></canvas>
     </figure>
 
     <figure>
       <figcaption>tan</figcaption>
-      <canvas></canvas>
+      <canvas data-func="(x, y) => new Complex(x, y).tan()"></canvas>
+    </figure>
+
+    <figure>
+      <figcaption>sinh</figcaption>
+      <canvas data-func="(x, y) => new Complex(x, y).sinh()"></canvas>
+    </figure>
+
+    <figure>
+      <figcaption>tanh</figcaption>
+      <canvas data-func="(x, y) => new Complex(x, y).tanh()"></canvas>
     </figure>
   </body>
 </html>
