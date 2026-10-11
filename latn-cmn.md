@@ -1,6 +1,6 @@
 # latinise mandarin
 
-## consonants
+## consonant
 
 |                  | sonorant | plain   | aspirate | fricative |
 | ---------------: | -------- | ------- | -------- | --------- |
@@ -10,7 +10,7 @@
 |           dental | n        | d [t]   | t [tʰ]   |           |
 |           labial | m        | b [p]   | p [pʰ]   | f         |
 
-## finals
+## final
 
 |     | ㄭ  | ㄜ  | ㄟ  | ㄡ  | ㄥ  | ㄣ  | ㄚ  | ㄞ  | ㄠ  | ㄤ  | ㄢ  |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -19,7 +19,7 @@
 | ㄨ  | u   | ue  | ui  |     | ug  | un  | ua  | uai |     | uag | uan |
 | ㄩ  | y   | ye  |     |     | yg  | yn  |     |     |     |     | yan |
 
-## tones
+## tone
 
 | 陰平  | 陽平 | 上  | 去  | 輕  |
 | ----- | ---- | --- | --- | --- |

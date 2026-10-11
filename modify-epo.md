@@ -57,7 +57,7 @@
 
 ## grammar
 
-mostly follows _esperanto sen fleksio_.
+mostly followeth _esperanto sen fleksio_.
 
 | item        | old                       | new                       |
 | ----------- | ------------------------- | ------------------------- |

@@ -1,6 +1,6 @@
 # latinise cantonese
 
-## initials
+## initial
 
 each initial hath two variants: high (historically unvoiced) and low (historically voiced).
 
@@ -25,7 +25,7 @@ each initial hath two variants: high (historically unvoiced) and low (historical
 - pronounce long `u` as [uː] after a labiovelar or a labial, otherwise [yː].
 - replace `ø` with `r` in ascii-only environments.
 
-## codae and tones
+## coda and tone
 
 | 平  | 上  | 去  | 入  |
 | --- | --- | --- | --- |
@@ -36,7 +36,7 @@ each initial hath two variants: high (historically unvoiced) and low (historical
 | n   | d   | z   | t   |
 | m   | b   | v   | p   |
 
-## byspels
+## byspel
 
 | hanz   | jyutping          | latn          |
 | ------ | ----------------- | ------------- |
