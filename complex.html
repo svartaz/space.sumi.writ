@@ -8,17 +8,18 @@
         place-items: center;
         padding: 1em;
         inline-size: fit-content;
-        margin-inline: auto;
+        block-size: fit-content;
+        margin: auto;
       }
 
       canvas {
-        border: 1px solid gray;
-        width: 512px;
-        height: 512px;
+        width: 320px;
+        height: 320px;
       }
 
       figure {
         margin: 0;
+        block-size: fit-content;
       }
     </style>
     <script>
@@ -110,10 +111,13 @@
         const width = rect.width;
         const height = rect.height;
         const scale = widthLogical / width;
+        const iToX = (i) => (i - width / 2) * scale;
+        const jToY = (j) => (j - height / 2) * scale;
+
         for (let i = 0; i < width; i++)
           for (let j = 0; j < height; j++) {
-            const x = (i - width / 2) * scale;
-            const y = (j - height / 2) * scale;
+            const x = iToX(i);
+            const y = jToY(j);
             const complex = func(x, y);
             const norm = complex.norm();
             const angle = complex.angle();
@@ -123,17 +127,6 @@
                 : `hsl(${(angle * 180) / Math.PI}deg 100% ${compress(norm) * 100}%)`;
             context.fillRect(i, j, 1, 1);
           }
-
-        context.strokeStyle = "gray";
-        context.strokeWidth = 1;
-        context.beginPath();
-        context.moveTo(0, height / 2);
-        context.lineTo(width, height / 2);
-        context.stroke();
-        context.beginPath();
-        context.moveTo(width / 2, 0);
-        context.lineTo(width / 2, height);
-        context.stroke();
       };
 
       document.addEventListener("DOMContentLoaded", () => {
