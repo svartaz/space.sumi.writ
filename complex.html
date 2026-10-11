@@ -13,8 +13,8 @@
       }
 
       canvas {
-        width: 320px;
-        height: 320px;
+        width: 480px;
+        height: 480px;
       }
 
       figure {
@@ -26,12 +26,14 @@
       const compress = (positive) => positive / (1 + positive);
 
       class Complex {
-        constructor(re, im) {
+        constructor(re, im = 0) {
           this.re = re;
           this.im = im;
         }
 
-        norm() {
+        static one = new Complex(1, 0);
+
+        abs() {
           return Math.hypot(this.re, this.im);
         }
 
@@ -43,9 +45,36 @@
           return new Complex(this.re, -this.im);
         }
 
-        recip() {
-          const under = this.norm();
-          return new Complex(this.re / under, this.im / under);
+        add(other) {
+          return new Complex(this.re + other.re, this.im + other.im);
+        }
+
+        mul(other) {
+          return new Complex(
+            this.re * other.re - this.im * other.im,
+            this.re * other.im + this.im * other.re,
+          );
+        }
+
+        neg() {
+          return new Complex(-this.re, -this.im);
+        }
+
+        rec() {
+          const under = this.re * this.re + this.im * this.im;
+          return new Complex(this.re / under, -this.im / under);
+        }
+
+        sub(other) {
+          return this.add(other.neg());
+        }
+
+        div(other) {
+          return this.mul(other.rec());
+        }
+
+        pow(other) {
+          return other.mul(this.log()).exp();
         }
 
         exp() {
@@ -112,19 +141,19 @@
         const height = rect.height;
         const scale = widthLogical / width;
         const iToX = (i) => (i - width / 2) * scale;
-        const jToY = (j) => (j - height / 2) * scale;
+        const jToY = (j) => -(j - height / 2) * scale;
 
         for (let i = 0; i < width; i++)
           for (let j = 0; j < height; j++) {
             const x = iToX(i);
             const y = jToY(j);
             const complex = func(x, y);
-            const norm = complex.norm();
+            const abs = complex.abs();
             const angle = complex.angle();
             context.fillStyle =
-              isNaN(norm) || isNaN(angle)
+              isNaN(abs) || isNaN(angle)
                 ? "gray"
-                : `hsl(${(angle * 180) / Math.PI}deg 100% ${compress(norm) * 100}%)`;
+                : `hsl(${(angle * 180) / Math.PI}deg 100% ${compress(abs) * 100}%)`;
             context.fillRect(i, j, 1, 1);
           }
       };
@@ -143,7 +172,23 @@
 
     <figure>
       <figcaption>reciprocal</figcaption>
-      <canvas data-func="(x, y) => new Complex(x, y).recip()"></canvas>
+      <canvas
+        data-func="(x, y) => new Complex(x, y).pow(new Complex(-1))"
+      ></canvas>
+    </figure>
+
+    <figure>
+      <figcaption>squared</figcaption>
+      <canvas
+        data-func="(x, y) => new Complex(x, y).pow(new Complex(2))"
+      ></canvas>
+    </figure>
+
+    <figure>
+      <figcaption>squared reciprocal</figcaption>
+      <canvas
+        data-func="(x, y) => new Complex(x, y).pow(new Complex(-2))"
+      ></canvas>
     </figure>
 
     <figure>
