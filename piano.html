@@ -1,0 +1,202 @@
+<html>
+  <head>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body,
+      .piano {
+        inline-size: 100%;
+        block-size: 100%;
+      }
+
+      body {
+        background-color: gray;
+        padding: 1rem;
+
+        .piano {
+          display: grid;
+          gap: 1px;
+          grid-template-columns: repeat(29, 1fr);
+          grid-template-rows: 1fr 1fr 1rem 1fr 1fr;
+
+          [data-number] {
+            opacity: 0.5;
+            display: grid;
+            place-items: center;
+            font-family: monospace;
+            font-size: 200%;
+          }
+        }
+      }
+    </style>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const data = {};
+        let context;
+
+        for (const element of document.querySelectorAll("[data-number]")) {
+          const number = parseInt(element.dataset["number"]);
+          const klass = number % 12;
+          [element.style.backgroundColor, element.style.color] = [
+            0, 2, 4, 5, 7, 9, 11,
+          ].includes(klass)
+            ? ["white", "black"]
+            : ["black", "white"];
+
+          data[element.textContent] = { element, number, voice: null };
+        }
+
+        const startNote = (note) => {
+          if (!note || note.voice) return;
+
+          context ??= new AudioContext();
+          context.resume();
+
+          const now = context.currentTime;
+          const gain = new GainNode(context, { gain: 0 });
+          gain.gain.setValueAtTime(0, now);
+          gain.gain.linearRampToValueAtTime(1 / 8, now + 1 / 64);
+          const oscillator = new OscillatorNode(context, {
+            type: "sine",
+            frequency: 440 * Math.pow(2, (note.number - 69) / 12),
+          });
+          oscillator.connect(gain).connect(context.destination);
+          oscillator.start();
+          note.voice = { oscillator, gain };
+          note.element.style.opacity = 1;
+        };
+
+        const stopNote = (note) => {
+          if (!note?.voice) return;
+
+          const { oscillator, gain } = note.voice;
+          delete note.voice;
+          const now = context.currentTime;
+          const release = 0.15;
+          gain.gain.cancelAndHoldAtTime(now);
+          gain.gain.linearRampToValueAtTime(0, now + release);
+          gain.gain.setValueAtTime(0, now + release + 0.02);
+          oscillator.addEventListener(
+            "ended",
+            () => {
+              oscillator.disconnect();
+              gain.disconnect();
+            },
+            { once: true },
+          );
+          oscillator.stop(now + release + 0.02);
+          note.element.style.opacity = 0.5;
+        };
+
+        const codeToKey = (code) =>
+          code.startsWith("Key")
+            ? code.slice(3).toLowerCase()
+            : code.startsWith("Digit")
+              ? code.slice(5)
+              : {
+                  Backquote: "`",
+                  Minus: "-",
+                  Equal: "=",
+                  BracketLeft: "[",
+                  BracketRight: "]",
+                  Backslash: "\\",
+                  Semicolon: ";",
+                  Quote: "'",
+                  Comma: ",",
+                  Period: ".",
+                  Slash: "/",
+                }[code];
+
+        document.addEventListener("keydown", (event) => {
+          if (
+            event.repeat ||
+            event.metaKey ||
+            event.ctrlKey ||
+            event.altKey ||
+            event.key === "Enter" ||
+            event.key === " "
+          )
+            return;
+
+          const note = data[codeToKey(event.code)];
+          if (!note) return;
+          event.preventDefault();
+          startNote(note);
+        });
+
+        document.addEventListener("keyup", (event) => {
+          stopNote(data[codeToKey(event.code)]);
+        });
+
+        window.addEventListener("blur", () => {
+          for (const note of Object.values(data)) stopNote(note);
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <div class="piano" role="group" aria-label="Computer piano">
+      <div style="grid-column: span 2" data-number="55">`</div>
+      <div style="grid-column: span 2" data-number="57">1</div>
+      <div style="grid-column: span 2" data-number="59">2</div>
+      <div style="grid-column: span 2" data-number="61">3</div>
+      <div style="grid-column: span 2" data-number="63">4</div>
+      <div style="grid-column: span 2" data-number="65">5</div>
+      <div style="grid-column: span 2" data-number="67">6</div>
+      <div style="grid-column: span 2" data-number="69">7</div>
+      <div style="grid-column: span 2" data-number="71">8</div>
+      <div style="grid-column: span 2" data-number="73">9</div>
+      <div style="grid-column: span 2" data-number="75">0</div>
+      <div style="grid-column: span 2" data-number="77">-</div>
+      <div style="grid-column: span 2" data-number="79">=</div>
+      <div style="grid-column: span 3"></div>
+
+      <div style="grid-column: span 3"></div>
+      <div style="grid-column: span 2" data-number="58">q</div>
+      <div style="grid-column: span 2" data-number="60">w</div>
+      <div style="grid-column: span 2" data-number="62">e</div>
+      <div style="grid-column: span 2" data-number="64">r</div>
+      <div style="grid-column: span 2" data-number="66">t</div>
+      <div style="grid-column: span 2" data-number="68">y</div>
+      <div style="grid-column: span 2" data-number="70">u</div>
+      <div style="grid-column: span 2" data-number="72">i</div>
+      <div style="grid-column: span 2" data-number="74">o</div>
+      <div style="grid-column: span 2" data-number="76">p</div>
+      <div style="grid-column: span 2" data-number="78">[</div>
+      <div style="grid-column: span 2" data-number="80">]</div>
+      <div style="grid-column: span 2" data-number="82">\</div>
+
+      <div style="grid-column: 1 / -1"></div>
+
+      <div style="grid-column: span 4"></div>
+      <div style="grid-column: span 2" data-number="47">a</div>
+      <div style="grid-column: span 2" data-number="49">s</div>
+      <div style="grid-column: span 2" data-number="51">d</div>
+      <div style="grid-column: span 2" data-number="53">f</div>
+      <div style="grid-column: span 2" data-number="55">g</div>
+      <div style="grid-column: span 2" data-number="57">h</div>
+      <div style="grid-column: span 2" data-number="59">j</div>
+      <div style="grid-column: span 2" data-number="61">k</div>
+      <div style="grid-column: span 2" data-number="63">l</div>
+      <div style="grid-column: span 2" data-number="65">;</div>
+      <div style="grid-column: span 2" data-number="67">'</div>
+      <div style="grid-column: span 3"></div>
+
+      <div style="grid-column: span 5"></div>
+      <div style="grid-column: span 2" data-number="48">z</div>
+      <div style="grid-column: span 2" data-number="50">x</div>
+      <div style="grid-column: span 2" data-number="52">c</div>
+      <div style="grid-column: span 2" data-number="54">v</div>
+      <div style="grid-column: span 2" data-number="56">b</div>
+      <div style="grid-column: span 2" data-number="58">n</div>
+      <div style="grid-column: span 2" data-number="60">m</div>
+      <div style="grid-column: span 2" data-number="62">,</div>
+      <div style="grid-column: span 2" data-number="64">.</div>
+      <div style="grid-column: span 2" data-number="66">/</div>
+      <div style="grid-column: span 4"></div>
+    </div>
+  </body>
+</html>
